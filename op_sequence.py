@@ -158,8 +158,8 @@ for date in range(bitcoin_size):
                 dqy.buy_bitcoin(bitcoin_change, date)
             if gold_change > 0:
                 #算出要分钱的权重
-                param_weght_bitcoin = (((means_bitcoin - bitcoin[date])/means_bitcoin)/((means_bitcoin - bitcoin[date])/means_bitcoin) + ((means_gold - gold[gold_date_index])/means_gold))
-                param_weght_gold = (((means_gold - gold[gold_date_index])/means_gold)/((means_bitcoin - bitcoin[date])/means_bitcoin) + ((means_gold - gold[gold_date_index])/means_gold))
+                param_weght_bitcoin = (((means_bitcoin - bitcoin[date])/means_bitcoin)/(((means_bitcoin - bitcoin[date])/means_bitcoin) + ((means_gold - gold[gold_date_index])/means_gold)))
+                param_weght_gold = (((means_gold - gold[gold_date_index])/means_gold)/(((means_bitcoin - bitcoin[date])/means_bitcoin) + ((means_gold - gold[gold_date_index])/means_gold)))
                 #将自己手上的钱按权重分开
                 money_split1 = dqy.money * param_weght_bitcoin
                 money_split2 = dqy.money * param_weght_gold
@@ -183,16 +183,17 @@ for date in range(bitcoin_size):
             dqy.sell_bitcoin(np.abs(bitcoin_change), date)
         elif bitcoin_change > 0:
             dqy.buy_bitcoin(bitcoin_change, date)
-    if date < 5:
-        means_bitcoin = np.mean(bitcoin[0 : date + 1])
-    else:
-        means_bitcoin = np.mean(bitcoin[date - 4 : date + 1])
-    bitcoin_change = BAPARAM + ((means_bitcoin - bitcoin[date])/means_bitcoin) * (dqy.money/bitcoin[date])
-    if bitcoin_change <= 0:
-        dqy.sell_bitcoin(np.abs(bitcoin_change), date)
-    elif bitcoin_change > 0:
-        dqy.buy_bitcoin(bitcoin_change, date)
+    # if date < 5:
+    #     means_bitcoin = np.mean(bitcoin[0 : date + 1])
+    # else:
+    #     means_bitcoin = np.mean(bitcoin[date - 4 : date + 1])
+    # bitcoin_change = BAPARAM + ((means_bitcoin - bitcoin[date])/means_bitcoin) * (dqy.money/bitcoin[date])
+    # if bitcoin_change <= 0:
+    #     dqy.sell_bitcoin(np.abs(bitcoin_change), date)
+    # elif bitcoin_change > 0:
+    #     dqy.buy_bitcoin(bitcoin_change, date)
 
+    ##用来打印图片的
     means_vec[date] = means_bitcoin
     money[date] = dqy.money
     dqy_bitcoin[date] = dqy.bitcoin_amount
@@ -200,6 +201,8 @@ for date in range(bitcoin_size):
     #统计总资产价值
     total_wealth[date] = dqy.money + dqy.bitcoin_amount * bitcoin[date] #+ dqy.gold_amount * gold[gold_date_index]
     BITCOIN_CHANGE[date] = bitcoin_change
+
+
 print(total_wealth[1825])
 print(dqy.bitcoin_amount)
 print(money[1825])
@@ -210,8 +213,7 @@ print("%.32f" %np.min(dqy_bitcoin))
 
 #plt.plot(X, money)
 plt.plot(X,dqy_bitcoin)
-
-#plt.plot(X, bitcoin, 'r*--')
+plt.plot(X, bitcoin, 'r*--')
 #plt.plot(X3, gold)
 # #plt.plot(X, dqy_gold)
 # #plt.legend(labels = ['money', 'bicoin_cnt', 'gold_cnt'], loc= 'best')
