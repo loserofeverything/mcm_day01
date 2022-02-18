@@ -1,5 +1,7 @@
 import numpy as np
 
+minimum_money = 0.01
+
 class customer(object):
 
     bitcoin_market = np.empty((1826, ))
@@ -24,18 +26,26 @@ class customer(object):
         return amount 
     
     def buy_bitcoin(self, amount, date):
-        new_amount = amount
-        if self.money < amount * customer.bitcoin_market[date]:
-            new_amount = self.do_something(date, 'bitcoin')
-        self.money -= (new_amount * customer.bitcoin_market[date])*(1+customer.bitcoin_premium)
-        self.bitcoin_amount += new_amount
+        if self.money >= minimum_money:
+            new_amount = amount
+            #if self.money < (1 + customer.bitcoin_premium)*(amount * customer.bitcoin_market[date]):
+            if self.money < (amount * customer.bitcoin_market[date]):
+                new_amount = self.do_something(date, 'bitcoin')
+            self.money -= (new_amount * customer.bitcoin_market[date])*(1+customer.bitcoin_premium)
+            self.bitcoin_amount += new_amount
+        else:
+            pass
      
     def buy_gold(self, amount, date):
-        new_amount = amount
-        if self.money < amount * customer.gold_market[date]:
-            new_amount = self.do_something(date, 'gold')
-        self.money -= (new_amount * customer.gold_market[date])*(1+customer.gold_premium)
-        self.gold_amount += new_amount
+        if self.money >= minimum_money:
+            new_amount = amount
+            #if self.money < (1+customer.gold_premium)*(amount * customer.gold_market[date]):
+            if self.money < (amount * customer.gold_market[date]):
+                new_amount = self.do_something(date, 'gold')
+            self.money -= (new_amount * customer.gold_market[date])*(1+customer.gold_premium)
+            self.gold_amount += new_amount
+        else:
+            pass
 
     def sell_bitcoin(self, amount, date):
         new_amount = amount
