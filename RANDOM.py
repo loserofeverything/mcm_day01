@@ -2,10 +2,12 @@ import numpy as np
 
 def getRandomWeight(mode):
     if mode == 0:
+        np.random.seed()
         randlist = np.random.uniform(0.1, 1, (3,))
         sums = np.sum(randlist)
         return [randlist[0]/sums, randlist[1]/sums, randlist[2]/sums]
     else:
+        np.random.seed()
         randlist = np.random.uniform(0.1, 1, (2,))
         sums = np.sum(randlist)
         return [randlist[0]/sums, randlist[1]/sums]

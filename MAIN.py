@@ -144,23 +144,23 @@ customer.gold_premium = PARAM.GOLD_PRE
 
 
 # ##实例化
-dqy = customer(PARAM.USER_MONEY)
+# dqy = customer(PARAM.USER_MONEY)
 
-#用单线法遍历1826天中的每一天
-for date in range(bitcoin_size):
-    #单线法
-    S_MA(dqy, bitcoin, time_sort, gold_append, PARAM.MEANTIME, date, buy_days, buy_days_gold)
+# #用单线法遍历1826天中的每一天
+# for date in range(bitcoin_size):
+#     #单线法
+#     S_MA(dqy, bitcoin, time_sort, gold_append, PARAM.MEANTIME, date, buy_days, buy_days_gold)
     
-    #用来跟踪变量的变化情况来画图
-    money[date] = dqy.money
-    dqy_bitcoin[date] = dqy.bitcoin_amount
-    dqy_gold[date] = dqy.gold_amount
-    #统计总资产价值
-    if date in time_sort:
-        gold_date_index = int(np.argmax(time_sort == date))
-        total_wealth[date] = dqy.money + dqy.bitcoin_amount * bitcoin[date] + dqy.gold_amount * gold[gold_date_index]
-    else:
-        total_wealth[date] = dqy.money + dqy.bitcoin_amount * bitcoin[date]
+#     #用来跟踪变量的变化情况来画图
+#     money[date] = dqy.money
+#     dqy_bitcoin[date] = dqy.bitcoin_amount
+#     dqy_gold[date] = dqy.gold_amount
+#     #统计总资产价值
+#     if date in time_sort:
+#         gold_date_index = int(np.argmax(time_sort == date))
+#         total_wealth[date] = dqy.money + dqy.bitcoin_amount * bitcoin[date] + dqy.gold_amount * gold_append[gold_date_index]
+#     else:
+#         total_wealth[date] = dqy.money + dqy.bitcoin_amount * bitcoin[date] + dqy.gold_amount * gold_append[gold_date_index]
 
 
 # plt.title("Gold - Bitcoin holdings")
@@ -229,11 +229,15 @@ for date in range(bitcoin_size):
 
 # #统计总资产
 # for date in range(1826):
+    
+    
 #     if date in time_sort:
 #         gold_date_index = int(np.argmax(time_sort == date))
 #         total_wealth[date] = money[date] + dqy_bitcoin[date] * bitcoin[date] + dqy_gold[date] * gold[gold_date_index]
 #     else:
-#         total_wealth[date] = money[date] + dqy_bitcoin[date] * bitcoin[date]
+#         total_wealth[date] = money[date] + dqy_bitcoin[date] * bitcoin[date] + dqy_gold[date] * gold[gold_date_index]
+
+
 
 
 # plt.title("Gold - Bitcoin holdings")
@@ -253,11 +257,13 @@ for date in range(bitcoin_size):
 # plt.savefig("MoneyHoldings_two_mean.png")
 # plt.show()
 
+
 # plt.title("Total Asset")
 # plt.xlabel("Days")
 # plt.ylabel("values")
+# plt.plot(X_bitcoin, money)
 # plt.plot(X_bitcoin, total_wealth)
-# plt.legend(labels = ["total asset value"], loc ='best')
+# plt.legend(labels = ["mon", 'ass'], loc ='best')
 # plt.savefig("TotalAsset_two_mean.png")
 # plt.show()
 
@@ -306,9 +312,9 @@ for date in range(bitcoin_size):
 #         ran_dqy_gold[i] = dqy3.gold_amount
 #         if date in time_sort:
 #             gold_date_index = int(np.argmax(time_sort == date))
-#             ran_total_wealth[i] = dqy3.money + dqy3.bitcoin_amount * bitcoin[date] + dqy3.gold_amount * gold[gold_date_index]
+#             ran_total_wealth[i] = dqy3.money + dqy3.bitcoin_amount * bitcoin[date] + dqy3.gold_amount * gold_append[gold_date_index]
 #         else:
-#             ran_total_wealth[i] = dqy3.money + dqy3.bitcoin_amount * bitcoin[date]
+#             ran_total_wealth[i] = dqy3.money + dqy3.bitcoin_amount * bitcoin[date] + dqy3.gold_amount * gold_append[gold_date_index]
 #     # if cnt == 99:
 #     #     plt.title("Gold - Bitcoin holdings")
 #     #     plt.xlabel("Days")
@@ -360,59 +366,55 @@ for date in range(bitcoin_size):
 
 
 
-# money_for_lin = np.empty((1826,))
-# gold_for_lin = np.empty((1826,))
-# bitcoin_for_lin = np.empty((1826,))
-# total_wealth_fo_lin = np.empty((1826,))
+money_for_lin = np.empty((1826,))
+gold_for_lin = np.empty((1826,))
+bitcoin_for_lin = np.empty((1826,))
+total_wealth_fo_lin = np.empty((1826,))
 
 
-# dqy4 = customer(PARAM.USER_MONEY)
-# LinProg(dqy4,bitcoin, gold_append, time_sort, 1825, bit_predict, gold_predict,dqy4.bitcoin_premium,dqy4.gold_premium, money_for_lin, gold_for_lin, bitcoin_for_lin)
+dqy4 = customer(PARAM.USER_MONEY)
+LinProg(dqy4,bitcoin, gold_append, time_sort, 1825, bit_predict, gold_predict,dqy4.bitcoin_premium,dqy4.gold_premium, money_for_lin, gold_for_lin, bitcoin_for_lin)
 
-# for i in range(1825):
-#     if i in time_sort:
-#         gold_date_index = int(np.argmax(time_sort == i))
-#         total_wealth_fo_lin[i] = money_for_lin[i] + bitcoin_for_lin[i] * bitcoin[i] + gold_for_lin[i] * gold_append[gold_date_index]
-#     else:
-#         total_wealth_fo_lin[i] = money_for_lin[i] + bitcoin_for_lin[i] * bitcoin[i]
+for i in range(1825):
+    if i in time_sort:
+        gold_date_index = int(np.argmax(time_sort == i))
+        total_wealth_fo_lin[i] = money_for_lin[i] + bitcoin_for_lin[i] * bitcoin[i] + gold_for_lin[i] * gold_append[gold_date_index]
+    else:
+        total_wealth_fo_lin[i] = money_for_lin[i] + bitcoin_for_lin[i] * bitcoin[i] + gold_for_lin[i] * gold_append[gold_date_index]
 
-# money_for_lin[-1] = dqy4.money
-# bitcoin_for_lin[-1] = dqy4.bitcoin_amount
-# gold_for_lin[-1] = dqy4.gold_amount
+money_for_lin[-1] = dqy4.money
+bitcoin_for_lin[-1] = dqy4.bitcoin_amount
+gold_for_lin[-1] = dqy4.gold_amount
 
 
-# total_wealth_fo_lin[1825] = money_for_lin[-1] + bitcoin_for_lin[-1] * bitcoin[-1] + gold_for_lin[-1] * gold_append[-1]
+total_wealth_fo_lin[1825] = money_for_lin[-1] + bitcoin_for_lin[-1] * bitcoin[-1] + gold_for_lin[-1] * gold_append[-1]
 
-# min_date = np.where(total_wealth_fo_lin == np.min(total_wealth_fo_lin))[0][0]
-# print(min_date in time_sort)
+min_date = np.where(total_wealth_fo_lin == np.min(total_wealth_fo_lin))[0][0]
+print(min_date in time_sort)
 
-# #plt.plot(X_bitcoin, total_wealth_fo_lin)
-# # # plt.plot(X_bitcoin, money_for_lin)
-# # plt.plot(X_bitcoin, gold_for_lin/10)
-# # plt.plot(X_bitcoin, bitcoin_for_lin)
-# # #plt.legend(labels = ['total wealth','money', 'gold', 'bitcoin owned'], loc = 'best')
-# # plt.title("Linear programming_predict_total assets")
-# # plt.ylabel("Total assets")
-# # plt.xlabel("Days")
-# # plt.savefig("Linear_programming_predict_total_assets.png", dpi = 500)
-# # plt.show()
+plt.plot(X_bitcoin, total_wealth_fo_lin)
+plt.title("Linear programming_predict_total assets")
+plt.ylabel("Total assets")
+plt.xlabel("Days")
+plt.savefig("Linear_programming_predict_total_assets.png", dpi = 500)
+plt.show()
 
-# # plt.title("Gold - Bitcoin holdings")
-# # plt.plot(X_bitcoin, bitcoin_for_lin)
-# # plt.plot(X_bitcoin, gold_for_lin)
-# # plt.legend(labels = ['bitcoin', 'gold'], loc = 'best')
-# # plt.ylabel("amount")
-# # plt.xlabel("Days")
-# # plt.savefig("GoldBitcoinHoldings_LPP.png", dpi = 500)
-# # plt.show()
+plt.title("Gold - Bitcoin holdings")
+plt.plot(X_bitcoin, bitcoin_for_lin)
+plt.plot(X_bitcoin, gold_for_lin)
+plt.legend(labels = ['bitcoin', 'gold'], loc = 'best')
+plt.ylabel("amount")
+plt.xlabel("Days")
+plt.savefig("GoldBitcoinHoldings_LPP.png", dpi = 500)
+plt.show()
 
-# # plt.title("Money holdings")
-# # plt.plot(X_bitcoin, money_for_lin)
-# # plt.legend(labels = ['money'], loc = 'best')
-# # plt.ylabel("amounts/$")
-# # plt.xlabel("Days")
-# # plt.savefig("MoneyHoldings_LPP.png", dpi = 500)
-# # plt.show()
+plt.title("Money holdings")
+plt.plot(X_bitcoin, money_for_lin)
+plt.legend(labels = ['money'], loc = 'best')
+plt.ylabel("amounts/$")
+plt.xlabel("Days")
+plt.savefig("MoneyHoldings_LPP.png", dpi = 500)
+plt.show()
 
 
 

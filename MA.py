@@ -17,12 +17,11 @@ def all_buy_b_param(means_1, means_2, cur_price_1, cur_price_2, cur_money):
 
 
 #用来确定购买或卖掉的个数
-def expressions(money, a, judge ,means_1, cur_price_1, means_2, cur_price_2, amount ,mode):#(cur_money, amount_bitcoin,  amount_gold, means_bitcoin, cur_price_bitcoin, means_gold, cur_price_gold, mode):
+def expressions(money, a, judge ,means_1, cur_price_1, means_2, cur_price_2, amount ,mode):
     if mode == 0:##两个都买
         return a + judge * all_buy_b_param(means_1, means_2, cur_price_1, cur_price_2, money)
     elif mode == 1:##一买一卖买的情况
         return a + judge * buy_b_param(money, cur_price_1)
-        #return amount_gold + ((means_gold - cur_price_gold)/means_gold) * b_param(means_gold, means_bitcoin, cur_price_gold, cur_price_bitcoin, cur_money)
     elif mode == 2:#卖的情况
         return a + judge * sell_b_param(amount)
 
