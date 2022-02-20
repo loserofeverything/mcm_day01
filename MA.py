@@ -25,8 +25,8 @@ def expressions(money, a, judge ,means_1, cur_price_1, means_2, cur_price_2, amo
     elif mode == 2:#卖的情况
         return a + judge * sell_b_param(amount)
 
-def judge(means, cur_price):
-    return PARAM.OFFSET + ((means - cur_price)/means)
+def judge(means, cur_price, offset):
+    return offset + ((means - cur_price)/means)
 
 def B_MA_judge(date, means_assert_1_now, means_assert_2_now, means_assert_1_before, means_assert_2_before):
     a = means_assert_1_now - means_assert_2_now
@@ -65,7 +65,7 @@ def calM_L(date, time, Assert):
 
 #----------------------------------------------------------------------
 
-def S_MA(customer, bitcoin, time_sort, gold, time, date, buy_days, buy_days_gold):
+def S_MA(customer, bitcoin, time_sort, gold, time, date, buy_days, buy_days_gold, offset):
     if date in time_sort:
             #找到黄金数据中对应的那一行
             gold_date_index = int(np.argmax(time_sort == date))
@@ -73,8 +73,8 @@ def S_MA(customer, bitcoin, time_sort, gold, time, date, buy_days, buy_days_gold
             means_bitcoin = calM_L(date, time, bitcoin)
             means_gold = calM_L(gold_date_index, time, gold)
 
-            j1 = judge(means_bitcoin, bitcoin[date])
-            j2 = judge(means_gold, gold[gold_date_index])
+            j1 = judge(means_bitcoin, bitcoin[date], offset)
+            j2 = judge(means_gold, gold[gold_date_index], offset)
             mode1 = 2
             mode2 = 2
             if j1 > 0 and j2 > 0:
