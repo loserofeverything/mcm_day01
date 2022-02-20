@@ -1,3 +1,4 @@
+from cProfile import label
 from matplotlib import projections
 from customer import customer
 import numpy as np
@@ -235,9 +236,17 @@ customer.gold_premium = PARAM.GOLD_PRE
 #         for date in range(1826):
 #             if date in time_sort:
 #                 gold_date_index = int(np.argmax(time_sort == date))
-#                 total_wealth[date] = money[date] + dqy_bitcoin[date] * bitcoin[date] + dqy_gold[date] * gold[gold_date_index]
+#                 total_wealth[date] = money[date] + dqy_bitcoin[date] * bitcoin[date] + dqy_gold[date] * gold_append[gold_date_index]
 #             else:
-#                 total_wealth[date] = money[date] + dqy_bitcoin[date] * bitcoin[date] + dqy_gold[date] * gold[gold_date_index]
+#                 total_wealth[date] = money[date] + dqy_bitcoin[date] * bitcoin[date] + dqy_gold[date] * gold_append[gold_date_index]
+#         if times == 11 and diff == 20:
+#             plt.title("Total Asset")
+#             plt.xlabel("Days")
+#             plt.ylabel("values")
+#             plt.plot(X_bitcoin ,total_wealth)
+#             plt.legend(labels = ["Asset values"])
+#             plt.savefig("TotalAsset_two_mean.png", dpi = 500)
+#             plt.show()
 #         z_axis_for_test[i1 * 5 + i2] = total_wealth[-1]
 
 
@@ -344,77 +353,77 @@ customer.gold_premium = PARAM.GOLD_PRE
 
 
 
-time_random_day = np.arange(10, 101, 10)
+# time_random_day = np.arange(10, 101, 10)
 
-ran_total_wealth_all_final = np.empty((10,))
+# ran_total_wealth_all_final = np.empty((10,))
 
-#随机100次，得到每次最终的结果
-for i1, times in enumerate (time_random_day):
-    #每次随机数法
+# #随机100次，得到每次最终的结果
+# for i1, times in enumerate (time_random_day):
+#     #每次随机数法
     
-    RANDOM_DATE = [i for i in range(0, bitcoin_size, times)]
+#     RANDOM_DATE = [i for i in range(0, bitcoin_size, times)]
 
 
-    if not (bitcoin_size - 1 in RANDOM_DATE):
-        RANDOM_DATE.append(bitcoin_size - 1)
+#     if not (bitcoin_size - 1 in RANDOM_DATE):
+#         RANDOM_DATE.append(bitcoin_size - 1)
 
 
-    ran_total_wealth_final = np.empty((10,))
+#     ran_total_wealth_final = np.empty((10,))
 
 
-    for cnt in range(10):
-        dqy3 = customer(PARAM.USER_MONEY)
-        ran_money = np.empty((len(RANDOM_DATE),))
-        ran_dqy_bitcoin = np.empty((len(RANDOM_DATE),))
-        ran_dqy_gold = np.empty((len(RANDOM_DATE),))
-        ran_total_wealth = np.empty((len(RANDOM_DATE),))
-        for i, date in enumerate(RANDOM_DATE):
-            RANDOM(date, dqy3, bitcoin, gold_append, time_sort)
-            ran_money[i] = dqy3.money
-            ran_dqy_bitcoin[i] = dqy3.bitcoin_amount
-            ran_dqy_gold[i] = dqy3.gold_amount
-            if date in time_sort:
-                gold_date_index = int(np.argmax(time_sort == date))
-                ran_total_wealth[i] = dqy3.money + dqy3.bitcoin_amount * bitcoin[date] + dqy3.gold_amount * gold_append[gold_date_index]
-            else:
-                ran_total_wealth[i] = dqy3.money + dqy3.bitcoin_amount * bitcoin[date] + dqy3.gold_amount * gold_append[gold_date_index]
-        ran_total_wealth_final[cnt] = ran_total_wealth[-1]
-    ran_total_wealth_all_final[i1] = np.mean(ran_total_wealth_final)
-    # if cnt == 99:
-    #     plt.title("Gold - Bitcoin holdings")
-    #     plt.xlabel("Days")
-    #     plt.ylabel("amounts")
-    #     plt.plot(RANDOM_DATE, ran_dqy_bitcoin)
-    #     plt.plot(RANDOM_DATE, ran_dqy_gold)
-    #     plt.legend(labels = ["bitcoin amount", "gold amount"], loc = "best")
-    #     plt.savefig("GoldBitcoinHoldings_Random.png")
-    #     plt.show()
+#     for cnt in range(10):
+#         dqy3 = customer(PARAM.USER_MONEY)
+#         ran_money = np.empty((len(RANDOM_DATE),))
+#         ran_dqy_bitcoin = np.empty((len(RANDOM_DATE),))
+#         ran_dqy_gold = np.empty((len(RANDOM_DATE),))
+#         ran_total_wealth = np.empty((len(RANDOM_DATE),))
+#         for i, date in enumerate(RANDOM_DATE):
+#             RANDOM(date, dqy3, bitcoin, gold_append, time_sort)
+#             ran_money[i] = dqy3.money
+#             ran_dqy_bitcoin[i] = dqy3.bitcoin_amount
+#             ran_dqy_gold[i] = dqy3.gold_amount
+#             if date in time_sort:
+#                 gold_date_index = int(np.argmax(time_sort == date))
+#                 ran_total_wealth[i] = dqy3.money + dqy3.bitcoin_amount * bitcoin[date] + dqy3.gold_amount * gold_append[gold_date_index]
+#             else:
+#                 ran_total_wealth[i] = dqy3.money + dqy3.bitcoin_amount * bitcoin[date] + dqy3.gold_amount * gold_append[gold_date_index]
+#         ran_total_wealth_final[cnt] = ran_total_wealth[-1]
+#     ran_total_wealth_all_final[i1] = np.mean(ran_total_wealth_final)
+#     # if cnt == 99:
+#     #     plt.title("Gold - Bitcoin holdings")
+#     #     plt.xlabel("Days")
+#     #     plt.ylabel("amounts")
+#     #     plt.plot(RANDOM_DATE, ran_dqy_bitcoin)
+#     #     plt.plot(RANDOM_DATE, ran_dqy_gold)
+#     #     plt.legend(labels = ["bitcoin amount", "gold amount"], loc = "best")
+#     #     plt.savefig("GoldBitcoinHoldings_Random.png")
+#     #     plt.show()
 
-    #     plt.title("Money Holdings")
-    #     plt.xlabel("Days")
-    #     plt.ylabel("amounts")
-    #     plt.plot(RANDOM_DATE, ran_money)
-    #     plt.legend(labels = ["money"], loc ='best')
-    #     plt.savefig("MoneyHoldings_Random.png")
-    #     plt.show()
+#     #     plt.title("Money Holdings")
+#     #     plt.xlabel("Days")
+#     #     plt.ylabel("amounts")
+#     #     plt.plot(RANDOM_DATE, ran_money)
+#     #     plt.legend(labels = ["money"], loc ='best')
+#     #     plt.savefig("MoneyHoldings_Random.png")
+#     #     plt.show()
 
-    #     plt.title("Total Asset")
-    #     plt.xlabel("Days")
-    #     plt.ylabel("values")
-    #     plt.plot(RANDOM_DATE, ran_total_wealth)
-    #     plt.legend(labels = ["total asset value"], loc ='best')
-    #     plt.savefig("TotalAsset_Random.png")
-    #     plt.show()
+#     #     plt.title("Total Asset")
+#     #     plt.xlabel("Days")
+#     #     plt.ylabel("values")
+#     #     plt.plot(RANDOM_DATE, ran_total_wealth)
+#     #     plt.legend(labels = ["total asset value"], loc ='best')
+#     #     plt.savefig("TotalAsset_Random.png")
+#     #     plt.show()
 
-data_random_tosave = pd.DataFrame({'交易间隔' : time_random_day, '资产平均值' : ran_total_wealth_all_final})
-data_random_tosave.to_csv('交易间隔_资产平均值.csv', sep=',', index = False)
+# data_random_tosave = pd.DataFrame({'交易间隔' : time_random_day, '资产平均值' : ran_total_wealth_all_final})
+# data_random_tosave.to_csv('交易间隔_资产平均值.csv', sep=',', index = False)
 
-plt.title("time gap - mean value of asset")
-plt.xlabel("time gap/Days")
-plt.ylabel("mean value asset/$")
-plt.plot(time_random_day, ran_total_wealth_all_final)
-plt.savefig("交易间隔_资产平均值.png", dpi = 500)
-plt.show()
+# plt.title("time gap - mean value of asset")
+# plt.xlabel("time gap/Days")
+# plt.ylabel("mean value asset/$")
+# plt.plot(time_random_day, ran_total_wealth_all_final)
+# plt.savefig("交易间隔_资产平均值.png", dpi = 500)
+# plt.show()
 
 
 
