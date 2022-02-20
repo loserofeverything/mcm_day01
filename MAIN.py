@@ -183,22 +183,39 @@ ran_dqy_bitcoin = np.empty((len(RANDOM_DATE),))
 ran_dqy_gold = np.empty((len(RANDOM_DATE),))
 ran_total_wealth = np.empty((len(RANDOM_DATE),))
 
-for i, date in enumerate(RANDOM_DATE):
-    RANDOM(date, dqy3, bitcoin, gold_append, time_sort)
-    ran_money[i] = dqy3.money
-    ran_dqy_bitcoin[i] = dqy3.bitcoin_amount
-    ran_dqy_gold[i] = dqy3.gold_amount
-    if date in time_sort:
-        gold_date_index = int(np.argmax(time_sort == date))
-        ran_total_wealth[i] = dqy3.money + dqy3.bitcoin_amount * bitcoin[date] + dqy3.gold_amount * gold[gold_date_index]
-    else:
-        ran_total_wealth[i] = dqy3.money + dqy3.bitcoin_amount * bitcoin[date]
-plt.plot(RANDOM_DATE, ran_dqy_bitcoin)
-plt.show()
-plt.plot(RANDOM_DATE, ran_dqy_gold)
-plt.show()
-plt.plot(RANDOM_DATE, ran_money)
-plt.show()
-plt.plot(RANDOM_DATE, ran_total_wealth)
-plt.show()
+ran_money_final = np.empty((PARAM.RANDOM_LOOP,))
+ran_dqy_bitcoin_final = np.empty((PARAM.RANDOM_LOOP,))
+ran_dqy_gold_final = np.empty((PARAM.RANDOM_LOOP,))
+ran_total_wealth_final = np.empty((PARAM.RANDOM_LOOP,))
 
+#随机100次，得到每次最终的结果
+for cnt in range(PARAM.RANDOM_LOOP):
+    for i, date in enumerate(RANDOM_DATE):
+        RANDOM(date, dqy3, bitcoin, gold_append, time_sort)
+        ran_money[i] = dqy3.money
+        ran_dqy_bitcoin[i] = dqy3.bitcoin_amount
+        ran_dqy_gold[i] = dqy3.gold_amount
+        if date in time_sort:
+            gold_date_index = int(np.argmax(time_sort == date))
+            ran_total_wealth[i] = dqy3.money + dqy3.bitcoin_amount * bitcoin[date] + dqy3.gold_amount * gold[gold_date_index]
+        else:
+            ran_total_wealth[i] = dqy3.money + dqy3.bitcoin_amount * bitcoin[date]
+    # plt.plot(RANDOM_DATE, ran_dqy_bitcoin)
+    # plt.show()
+    # plt.plot(RANDOM_DATE, ran_dqy_gold)
+    # plt.show()
+    # plt.plot(RANDOM_DATE, ran_money)
+    # plt.show()
+    # plt.plot(RANDOM_DATE, ran_total_wealth)
+    # plt.show()
+    ran_money_final[cnt] = ran_money[-1]
+    ran_dqy_bitcoin_final[cnt] = ran_dqy_bitcoin[-1]
+    ran_dqy_gold_final[cnt] = ran_dqy_gold[-1]
+    ran_total_wealth_final[cnt] = ran_total_wealth[-1]
+    dqy3 = customer(PARAM.USER_MONEY)
+
+
+
+#输出每次
+data_ = pd.DataFrame({'times' : np.linspace(1, PARAM.RANDOM_LOOP, PARAM.RANDOM_LOOP), 'final money' : ran_money_final, 'final bitcoin' : ran_dqy_bitcoin_final, 'final gold' : ran_dqy_gold_final, 'final asset':ran_total_wealth_final})
+data_.to_excel('random_result.xlsx', index = False)
