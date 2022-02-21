@@ -521,7 +521,7 @@ customer.gold_premium = PARAM.GOLD_PRE
 
 
 # dqy4 = customer(PARAM.USER_MONEY)
-# LinProg(dqy4,bitcoin, gold_append, time_sort, 1825, bit_predict, gold_predict,dqy4.bitcoin_premium,dqy4.gold_premium, money_for_lin, gold_for_lin, bitcoin_for_lin)
+# LinProg(dqy4,bitcoin, gold_append, time_sort, 1825, bitcoin, gold_append,dqy4.bitcoin_premium,dqy4.gold_premium, money_for_lin, gold_for_lin, bitcoin_for_lin)
 
 # for i in range(1825):
 #     if i in time_sort:
@@ -548,7 +548,7 @@ customer.gold_premium = PARAM.GOLD_PRE
 # plt.xlabel("Date")
 # plt.legend(labels = ["asset"], loc = 'best')
 # plt.gcf().autofmt_xdate() #自动旋转日期标记
-# plt.savefig("线性规划&预测/Linear_programming_predict_total_assets.png", dpi = 500)
+# plt.savefig("线性规划&预测_预测完全正确/Linear_programming_predict_total_assets.png", dpi = 500)
 # plt.show()
 
 # plt.title("Gold - Bitcoin holdings")
@@ -560,7 +560,7 @@ customer.gold_premium = PARAM.GOLD_PRE
 # plt.ylabel("Amount")
 # plt.xlabel("Date")
 # plt.gcf().autofmt_xdate() #自动旋转日期标记
-# plt.savefig("线性规划&预测/GoldBitcoinHoldings_LPP.png", dpi = 500)
+# plt.savefig("线性规划&预测_预测完全正确/GoldBitcoinHoldings_LPP.png", dpi = 500)
 # plt.show()
 
 # plt.title("Money holdings")
@@ -571,8 +571,52 @@ customer.gold_premium = PARAM.GOLD_PRE
 # plt.ylabel("Value")
 # plt.xlabel("Date")
 # plt.gcf().autofmt_xdate() #自动旋转日期标记
-# plt.savefig("线性规划&预测/MoneyHoldings_LPP.png", dpi = 500)
+# plt.savefig("线性规划&预测_预测完全正确/MoneyHoldings_LPP.png", dpi = 500)
 # plt.show()
 
 
 
+#--------------------------------------------------------------------------------------------#
+
+
+# plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m/%d/%y'))
+# plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval = 100))
+# plt.plot(X_gold_date, gold_predict, 'r--')
+# plt.plot(X_gold_date, gold_append)
+# plt.legend(labels = ["gold price predict", "gold price"])
+# plt.ylabel("Value")
+# plt.xlabel("Date")
+# plt.gcf().autofmt_xdate() #自动旋转日期标记
+# plt.savefig("其它图片/gold_predict_compare.png", dpi = 500)
+# plt.show()
+
+#-------------------------------------------------------------------------------#
+
+# gold_diff_Y = np.zeros((bitcoin_size,))
+# bitcoin_diff_Y = np.zeros((bitcoin_size,))
+# gold_date_index_before = int(np.argmax(time_sort == 1))
+# for i in range(1, bitcoin_size):
+#     if i in time_sort:
+#         gold_date_index = int(np.argmax(time_sort == i))
+#         gold_diff_Y[i] = (gold_append[gold_date_index] - gold_append[gold_date_index_before])/gold_append[gold_date_index_before]
+#         gold_date_index_before = gold_date_index
+#     else:
+#         gold_diff_Y[i] = 0
+#     bitcoin_diff_Y[i] = (bitcoin[i] - bitcoin[i-1])/bitcoin[i-1]
+
+
+# gold_diff_tosave = pd.DataFrame({'日期' : bitcoin_time, '黄金价格日增幅' : gold_diff_Y})
+# gold_diff_tosave.to_csv('黄金价格日增幅.csv', sep=',', index = False)
+
+# bitcoin_diff_tosave = pd.DataFrame({'日期' : bitcoin_time, '比特币价格日增幅' : bitcoin_diff_Y})
+# bitcoin_diff_tosave.to_csv('比特币价格日增幅.csv', sep=',', index = False)
+
+
+
+# plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m/%d/%y'))
+# plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval = 100))
+# plt.plot(X_bitcoin_date, gold_diff_Y)
+# plt.plot(X_bitcoin_date, bitcoin_diff_Y)
+# plt.legend(labels = ["gold", "bitcoin"], loc= "best")
+# plt.gcf().autofmt_xdate() #自动旋转日期标记
+# plt.show()
