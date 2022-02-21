@@ -1,4 +1,5 @@
 from cProfile import label
+from re import X
 from matplotlib import projections
 from customer import customer
 import numpy as np
@@ -13,17 +14,11 @@ from RANDOM import RANDOM
 import csv
 from linprog_test import LinProg
 from mpl_toolkits import mplot3d
+import matplotlib.dates as mdates
 
 
 
-
-#用来存储黄金的交易日 形如：
-#1
-#3
-#4
-#5
-#6
-#9
+#用来计算黄金交易日所在黄金表单中的行
 #################
 def calcuTimeSort(time ,base):
     t1 = [ int(i) for i in base.split('/') ]
@@ -62,6 +57,7 @@ gold_predict = data4_values.reshape(gold_size,)
 
 
 gold_time = data2_values[:, 0]
+bitcoin_time = data1_values[:, 0]
 base_date = data1_values[0, 0]
 time_sort = np.array([calcuTimeSort(time, base_date) for time in gold_time])
 
@@ -84,6 +80,9 @@ mean_wave_bitcoin2 = np.empty((bitcoin_size,))
 mean_wave_gold2 = np.empty((gold_size,))
 X_bitcoin = np.linspace(0, bitcoin_size - 1, bitcoin_size)
 X_gold = np.linspace(0, gold_size-1, gold_size)
+X_bitcoin_date = [datetime.strptime(d, '%m/%d/%y').date() for d in bitcoin_time]
+X_gold_date = [datetime.strptime(d, '%m/%d/%y').date() for d in gold_time]
+
 
 
 
@@ -141,7 +140,7 @@ customer.gold_premium = PARAM.GOLD_PRE
 
 
 
-##实例化
+
 
 
 # time_for_test = np.arange(1, 50, 5)
@@ -167,87 +166,108 @@ customer.gold_premium = PARAM.GOLD_PRE
 #             else:
 #                 total_wealth[date] = dqy.money + dqy.bitcoin_amount * bitcoin[date] + dqy.gold_amount * gold_append[gold_date_index]
 #         #测试最优参数    
-#         # if sub_time_for_test == 6:
-#         #     if sub_offset_for_test == offset_for_test[-1]:
-#         #         plt.title("Gold - Bitcoin holdings")
-#         #         plt.xlabel("Days")
-#         #         plt.ylabel("amounts")
-#         #         plt.plot(X_bitcoin, dqy_bitcoin)
-#         #         plt.plot(X_bitcoin, dqy_gold)
-#         #         plt.legend(labels = ["bitcoin amount", "gold amount"], loc = "best")
-#         #         plt.savefig("单线法/GoldBitcoinHoldings_Single_mean.png")
-#         #         plt.show()
+#         if sub_time_for_test == 6:
+#             if sub_offset_for_test == offset_for_test[-1]:
+#                 plt.title("Gold - Bitcoin holdings")
+                
+#                 #设置日期横坐标
+#                 plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m/%d/%y'))
+#                 plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval = 100))
+                
+#                 plt.xlabel("Days")
+#                 plt.ylabel("amounts")
+#                 plt.plot(X_bitcoin_date, dqy_bitcoin)
+#                 plt.plot(X_bitcoin_date, dqy_gold)
+#                 plt.legend(labels = ["bitcoin amount", "gold amount"], loc = "best")
+#                 plt.gcf().autofmt_xdate() #自动旋转日期标记
+#                 plt.savefig("单线法/GoldBitcoinHoldings_Single_mean.png")
+#                 plt.show()
 
-#         #         plt.title("Money Holdings")
-#         #         plt.xlabel("Days")
-#         #         plt.ylabel("amounts")
-#         #         plt.plot(X_bitcoin, money)
-#         #         plt.legend(labels = ["money"], loc ='best')
-#         #         plt.savefig("单线法/MoneyHoldings_Single_mean.png")
-#         #         plt.show()
 
-#         #         plt.title("Total Asset")
-#         #         plt.xlabel("Days")
-#         #         plt.ylabel("values")
-#         #         plt.plot(X_bitcoin, total_wealth)
-#         #         plt.legend(labels = ["total asset value"], loc ='best')
-#         #         plt.savefig("单线法/TotalAsset_Single_mean.png")
-#         #         plt.show()
+
+#                 plt.title("Money Holdings")
+
+#                 #设置日期横坐标
+#                 plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m/%d/%y'))
+#                 plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval = 100))
+
+#                 plt.xlabel("Days")
+#                 plt.ylabel("amounts")
+#                 plt.plot(X_bitcoin_date, money)
+#                 plt.legend(labels = ["money"], loc ='best')
+#                 plt.gcf().autofmt_xdate() #自动旋转日期标记
+#                 plt.savefig("单线法/MoneyHoldings_Single_mean.png")
+#                 plt.show()
+
+
+
+
+
+#                 plt.title("Total Asset")
+#                 plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m/%d/%y'))
+#                 plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval = 100))
+#                 plt.xlabel("Days")
+#                 plt.ylabel("values")
+#                 plt.plot(X_bitcoin_date, total_wealth)
+#                 plt.legend(labels = ["total asset value"], loc ='best')
+#                 plt.gcf().autofmt_xdate() #自动旋转日期标记
+#                 plt.savefig("单线法/TotalAsset_Single_mean.png")
+#                 plt.show()
 #         z_axis_for_test[i1 * 10 + i2] = total_wealth[-1]
         
         
-# z_test = z_axis_for_test.reshape(10,10)
-# data_test = pd.DataFrame(z_test)
-# data_test.to_csv("单均线参数表.csv", sep=',', index = False)
+# # z_test = z_axis_for_test.reshape(10,10)
+# # data_test = pd.DataFrame(z_test)
+# # data_test.to_csv("单均线参数表.csv", sep=',', index = False)
 
 
 
 
-# plt.figure()
-# ax = plt.axes(projection = '3d')
-# X_FOR_TEST , Y_FOR_TEST = np.meshgrid(time_for_test, offset_for_test, indexing='ij')
-# ax.plot_surface(X_FOR_TEST, Y_FOR_TEST, z_axis_for_test.reshape(10, 10), cmap = 'viridis')
-# ax.set_xlabel("TIME")
-# ax.set_ylabel("OFFSET")
-# ax.set_zlabel("final asset")
-# plt.savefig("param_time_offset.png", dpi =500)
-# plt.show()
+# # plt.figure()
+# # ax = plt.axes(projection = '3d')
+# # X_FOR_TEST , Y_FOR_TEST = np.meshgrid(time_for_test, offset_for_test, indexing='ij')
+# # ax.plot_surface(X_FOR_TEST, Y_FOR_TEST, z_axis_for_test.reshape(10, 10), cmap = 'viridis')
+# # ax.set_xlabel("TIME")
+# # ax.set_ylabel("OFFSET")
+# # ax.set_zlabel("final asset")
+# # plt.savefig("param_time_offset.png", dpi =500)
+# # plt.show()
 
 
-# plt.title("Gold - Bitcoin holdings")
-# plt.xlabel("Days")
-# plt.ylabel("amounts")
-# plt.plot(X_bitcoin, dqy_bitcoin)
-# plt.plot(X_bitcoin, dqy_gold)
-# plt.legend(labels = ["bitcoin amount", "gold amount"], loc = "best")
-# plt.savefig("GoldBitcoinHoldings_Single_mean.png")
-# plt.show()
+# # plt.title("Gold - Bitcoin holdings")
+# # plt.xlabel("Days")
+# # plt.ylabel("amounts")
+# # plt.plot(X_bitcoin, dqy_bitcoin)
+# # plt.plot(X_bitcoin, dqy_gold)
+# # plt.legend(labels = ["bitcoin amount", "gold amount"], loc = "best")
+# # plt.savefig("GoldBitcoinHoldings_Single_mean.png")
+# # plt.show()
 
-# plt.title("Money Holdings")
-# plt.xlabel("Days")
-# plt.ylabel("amounts")
-# plt.plot(X_bitcoin, money)
-# plt.legend(labels = ["money"], loc ='best')
-# plt.savefig("MoneyHoldings_Single_mean.png")
-# plt.show()
+# # plt.title("Money Holdings")
+# # plt.xlabel("Days")
+# # plt.ylabel("amounts")
+# # plt.plot(X_bitcoin, money)
+# # plt.legend(labels = ["money"], loc ='best')
+# # plt.savefig("MoneyHoldings_Single_mean.png")
+# # plt.show()
 
-# plt.title("Total Asset")
-# plt.xlabel("Days")
-# plt.ylabel("values")
-# plt.plot(X_bitcoin, total_wealth)
-# plt.legend(labels = ["total asset value"], loc ='best')
-# plt.savefig("TotalAsset_Single_mean.png")
-# plt.show()
-
-
-
+# # plt.title("Total Asset")
+# # plt.xlabel("Days")
+# # plt.ylabel("values")
+# # plt.plot(X_bitcoin, total_wealth)
+# # plt.legend(labels = ["total asset value"], loc ='best')
+# # plt.savefig("TotalAsset_Single_mean.png")
+# # plt.show()
 
 
 
 
 
 
-#--------------------------双线法-------------------------------------------------------------------------#
+
+
+
+# #--------------------------双线法-------------------------------------------------------------------------#
 # #用来测试参数
 # time1_for_test = np.arange(1, 50, 5)
 # distance_between_t1t2 = np.arange(5, 30, 5)
@@ -266,79 +286,113 @@ customer.gold_premium = PARAM.GOLD_PRE
 #             else:
 #                 total_wealth[date] = money[date] + dqy_bitcoin[date] * bitcoin[date] + dqy_gold[date] * gold_append[gold_date_index]
 #         # #用来绘制最优参数下的结果
-#         # if times == 31 and diff == 25:
-#         #     plt.title("Bitcoin two mean line")
-#         #     plt.xlabel('Days')
-#         #     plt.ylabel('bitcoin mean price')
-#         #     plt.plot(X_bitcoin, mean_wave_bitcoin1, 'r--')
-#         #     plt.plot(X_bitcoin, mean_wave_bitcoin2)
-#         #     plt.legend(labels = ['%d days' %times, '%d days' %(times + diff)], loc = 'best')
-#         #     plt.savefig('双线法/BitcoinTwoMeanLine_Two_mean.png')
-#         #     plt.show()
-
-#         #     plt.title("Gold two mean line")
-#         #     plt.xlabel('Days')
-#         #     plt.ylabel('gold mean price')
-#         #     plt.plot(X_gold, mean_wave_gold1, 'r--')
-#         #     plt.plot(X_gold, mean_wave_gold2)
-#         #     plt.legend(labels = ['%d days' %times, '%d days' %(times + diff)], loc = 'best')
-#         #     plt.savefig('双线法/GoldTwoMeanLine_Two_mean.png')
-#         #     plt.show()
+#         if times == 31 and diff == 25:
+            
+#             bit_coin_buy_index = [index for index in np.where(buy_days > 0)[0]]
+#             bit_coin_sell_index = [index for index in np.where(buy_days < 0)[0]]
+#             gold_buy_index = [index for index in np.where(buy_days_gold > 0)[0]]
+#             gold_sell_index = [index for index in np.where(buy_days_gold < 0)[0]]
+#             bit_coin_buy_date = [X_bitcoin_date[i] for i in bit_coin_buy_index]
+#             bit_coin_sell_date = [X_bitcoin_date[i] for i in bit_coin_sell_index]
+#             gold_buy_date = [X_gold_date[i] for i in gold_buy_index]
+#             gold_sell_date = [X_gold_date[i] for i in gold_sell_index]
 
 
 
+#             #比特币双平均线对比 及 买入卖出
+#             plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m/%d/%y'))
+#             plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval = 100))
+            
+#             plt.xlabel('Date')
+#             plt.ylabel('Value')
+#             plt.plot(X_bitcoin_date, mean_wave_bitcoin1, 'r--')
+#             plt.plot(X_bitcoin_date, mean_wave_bitcoin2)
+#             plt.scatter(bit_coin_buy_date, bitcoin[bit_coin_buy_index])
+#             plt.scatter(bit_coin_sell_date, bitcoin[bit_coin_sell_index])
+#             plt.plot(X_bitcoin_date, bitcoin)
+
+#             plt.legend(labels = ['%d days' %times, '%d days' %(times + diff), 'purchase point', 'sale point', 'bitcoin price'], loc = 'best')
+            
+#             plt.gcf().autofmt_xdate() #自动旋转日期标记
+#             plt.savefig('双线法/BitcoinTwoMeanLine_Two_mean.png')
+#             plt.show()
+
+#             #黄金双平均线对比 及 买入卖出
+#             plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m/%d/%y'))
+#             plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval = 100))
+            
+#             plt.xlabel('Date')
+#             plt.ylabel('Value')
+#             plt.plot(X_gold_date, mean_wave_gold1, 'r--')
+#             plt.plot(X_gold_date, mean_wave_gold2)
+#             plt.scatter(gold_buy_date, gold_append[gold_buy_index])
+#             plt.scatter(gold_sell_date, gold_append[gold_sell_index])
+#             plt.plot(X_gold_date, gold_append)
+#             plt.legend(labels = ['%d days' %times, '%d days' %(times + diff), 'purchase point', 'sale point', 'gold price'], loc = 'best')
+#             plt.gcf().autofmt_xdate() #自动旋转日期标记
+#             plt.savefig('双线法/GoldTwoMeanLine_Two_mean.png')
+#             plt.show()
 
 
 
-#         #     plt.title("Gold - Bitcoin holdings")
-#         #     plt.xlabel("Days")
-#         #     plt.ylabel("amounts")
-#         #     plt.plot(X_bitcoin, dqy_bitcoin)
-#         #     plt.plot(X_bitcoin, dqy_gold)
-#         #     plt.legend(labels = ["bitcoin holdings", "gold holdings"], loc = "best")
-#         #     plt.savefig("双线法/GoldBitcoinHoldings_two_mean.png")
-#         #     plt.show()
-
-#         #     plt.title("Money Holdings")
-#         #     plt.xlabel("Days")
-#         #     plt.ylabel("amounts")
-#         #     plt.plot(X_bitcoin, money)
-#         #     plt.legend(labels = ["money"], loc ='best')
-#         #     plt.savefig("双线法/MoneyHoldings_two_mean.png")
-#         #     plt.show()
 
 
-#         #     plt.title("Total Asset")
-#         #     plt.xlabel("Days")
-#         #     plt.ylabel("values")
-#         #     plt.plot(X_bitcoin, total_wealth)
-#         #     plt.legend(labels = ['asset value'], loc ='best')
-#         #     plt.savefig("双线法/TotalAsset_two_mean.png")
-#         #     plt.show()
+
+#             plt.title("Gold - Bitcoin holdings")
+#             plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m/%d/%y'))
+#             plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval = 100))
+#             plt.xlabel("Date")
+#             plt.ylabel("Amount")
+#             plt.plot(X_bitcoin_date, dqy_bitcoin)
+#             plt.plot(X_bitcoin_date, dqy_gold)
+#             plt.legend(labels = ["bitcoin holdings", "gold holdings"], loc = "best")
+#             plt.gcf().autofmt_xdate() #自动旋转日期标记
+#             plt.savefig("双线法/GoldBitcoinHoldings_two_mean.png")
+#             plt.show()
+
+#             plt.title("Money Holdings")
+#             plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m/%d/%y'))
+#             plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval = 100))
+#             plt.xlabel("Date")
+#             plt.ylabel("Amount")
+#             plt.plot(X_bitcoin_date, money)
+#             plt.legend(labels = ["money"], loc ='best')
+#             plt.gcf().autofmt_xdate() #自动旋转日期标记
+#             plt.savefig("双线法/MoneyHoldings_two_mean.png")
+#             plt.show()
+
+
+#             plt.title("Total Asset")
+#             plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m/%d/%y'))
+#             plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval = 100))
+#             plt.xlabel("Date")
+#             plt.ylabel("Value")
+#             plt.plot(X_bitcoin_date, total_wealth)
+#             plt.legend(labels = ['asset value'], loc ='best')
+#             plt.gcf().autofmt_xdate() #自动旋转日期标记
+#             plt.savefig("双线法/TotalAsset_two_mean.png")
+#             plt.show()
 #         #用来存每次不同参数下的最终结果
 #         z_axis_for_test[i1 * 5 + i2] = total_wealth[-1]
 
-##用来画参数 与结果的关系图
-# z_test = z_axis_for_test.reshape(10,5)
-# data_test = pd.DataFrame(z_test)
-# data_test.to_csv("双均线参数表.csv", sep=',', index = False)
+# ##用来画参数 与结果的关系图
+# # z_test = z_axis_for_test.reshape(10,5)
+# # data_test = pd.DataFrame(z_test)
+# # data_test.to_csv("双均线参数表.csv", sep=',', index = False)
 
 
-# plt.figure()
-# ax = plt.axes(projection = '3d')
-# X_FOR_TEST , Y_FOR_TEST = np.meshgrid(time1_for_test, distance_between_t1t2, indexing='ij')
-# ax.plot_surface(X_FOR_TEST, Y_FOR_TEST, z_axis_for_test.reshape(10, 5), cmap = 'viridis')
-# ax.set_xlabel("TIME1")
-# ax.set_ylabel("TIME2 - TIME1")
-# ax.set_zlabel("final asset")
-# plt.savefig("双均线参数曲线.png", dpi =500)
-# plt.show()
+# # plt.figure()
+# # ax = plt.axes(projection = '3d')
+# # X_FOR_TEST , Y_FOR_TEST = np.meshgrid(time1_for_test, distance_between_t1t2, indexing='ij')
+# # ax.plot_surface(X_FOR_TEST, Y_FOR_TEST, z_axis_for_test.reshape(10, 5), cmap = 'viridis')
+# # ax.set_xlabel("TIME1")
+# # ax.set_ylabel("TIME2 - TIME1")
+# # ax.set_zlabel("final asset")
+# # plt.savefig("双均线参数曲线.png", dpi =500)
+# # plt.show()
 
 
-# bit_coin_buy_index = [index for index in np.where(buy_days > 0)[0]]
-# bit_coin_sell_index = [index for index in np.where(buy_days < 0)[0]]
-# gold_buy_index = [index for index in np.where(buy_days_gold > 0)[0]]
-# gold_sell_index = [index for index in np.where(buy_days_gold < 0)[0]]
+
 
 
 
@@ -362,71 +416,80 @@ customer.gold_premium = PARAM.GOLD_PRE
 
 
 
+# #用来统计参数 与 最终结果的关系
+# time_random_day = np.arange(10, 101, 10)
 
-time_random_day = np.arange(10, 101, 10)
+# ran_total_wealth_all_final = np.empty((10,))
 
-ran_total_wealth_all_final = np.empty((10,))
-
-#随机100次，得到每次最终的结果
-for i1, times in enumerate (time_random_day):
-    #每次随机数法
+# #随机100次，得到每次最终的结果
+# for i1, times in enumerate (time_random_day):
+#     #每次随机数法
     
-    RANDOM_DATE = [i for i in range(0, bitcoin_size, times)]
+#     RANDOM_DATE = [i for i in range(0, bitcoin_size, times)]
+    
+
+#     if not (bitcoin_size - 1 in RANDOM_DATE):
+#         RANDOM_DATE.append(bitcoin_size - 1)
+
+#     random_date_format = [X_bitcoin_date[i] for i in RANDOM_DATE]
+#     ran_total_wealth_final = np.empty((10,))
 
 
-    if not (bitcoin_size - 1 in RANDOM_DATE):
-        RANDOM_DATE.append(bitcoin_size - 1)
+#     for cnt in range(10):
+#         dqy3 = customer(PARAM.USER_MONEY)
+#         ran_money = np.empty((len(RANDOM_DATE),))
+#         ran_dqy_bitcoin = np.empty((len(RANDOM_DATE),))
+#         ran_dqy_gold = np.empty((len(RANDOM_DATE),))
+#         ran_total_wealth = np.empty((len(RANDOM_DATE),))
+#         for i, date in enumerate(RANDOM_DATE):
+#             RANDOM(date, dqy3, bitcoin, gold_append, time_sort)
+#             ran_money[i] = dqy3.money
+#             ran_dqy_bitcoin[i] = dqy3.bitcoin_amount
+#             ran_dqy_gold[i] = dqy3.gold_amount
+#             if date in time_sort:
+#                 gold_date_index = int(np.argmax(time_sort == date))
+#                 ran_total_wealth[i] = dqy3.money + dqy3.bitcoin_amount * bitcoin[date] + dqy3.gold_amount * gold_append[gold_date_index]
+#             else:
+#                 ran_total_wealth[i] = dqy3.money + dqy3.bitcoin_amount * bitcoin[date] + dqy3.gold_amount * gold_append[gold_date_index]
+#         #用来输出最优参数下的随机数基本统计图表
+#         if cnt == 9:
+#             if times == 70:
+#                 plt.title("Gold - Bitcoin holdings")
+#                 plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m/%d/%y'))
+#                 plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval = 100))
+#                 plt.xlabel("Date")
+#                 plt.ylabel("Amount")
+#                 plt.plot(random_date_format, ran_dqy_bitcoin)
+#                 plt.plot(random_date_format, ran_dqy_gold)
+#                 plt.legend(labels = ["bitcoin holdings", "gold holdings"], loc = "best")
+#                 plt.gcf().autofmt_xdate() #自动旋转日期标记
+#                 plt.savefig("随机数法/GoldBitcoinHoldings_Random.png")
+#                 plt.show()
 
+#                 plt.title("Money Holdings")
+#                 plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m/%d/%y'))
+#                 plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval = 100))
+#                 plt.xlabel("Date")
+#                 plt.ylabel("Value")
+#                 plt.plot(random_date_format, ran_money)
+#                 plt.legend(labels = ["money"], loc ='best')
+#                 plt.gcf().autofmt_xdate() #自动旋转日期标记
+#                 plt.savefig("随机数法/MoneyHoldings_Random.png")
+#                 plt.show()
 
-    ran_total_wealth_final = np.empty((10,))
-
-
-    for cnt in range(10):
-        dqy3 = customer(PARAM.USER_MONEY)
-        ran_money = np.empty((len(RANDOM_DATE),))
-        ran_dqy_bitcoin = np.empty((len(RANDOM_DATE),))
-        ran_dqy_gold = np.empty((len(RANDOM_DATE),))
-        ran_total_wealth = np.empty((len(RANDOM_DATE),))
-        for i, date in enumerate(RANDOM_DATE):
-            RANDOM(date, dqy3, bitcoin, gold_append, time_sort)
-            ran_money[i] = dqy3.money
-            ran_dqy_bitcoin[i] = dqy3.bitcoin_amount
-            ran_dqy_gold[i] = dqy3.gold_amount
-            if date in time_sort:
-                gold_date_index = int(np.argmax(time_sort == date))
-                ran_total_wealth[i] = dqy3.money + dqy3.bitcoin_amount * bitcoin[date] + dqy3.gold_amount * gold_append[gold_date_index]
-            else:
-                ran_total_wealth[i] = dqy3.money + dqy3.bitcoin_amount * bitcoin[date] + dqy3.gold_amount * gold_append[gold_date_index]
-        #用来输出最优参数下的随机数基本统计图表
-        if cnt == 9:
-            if times == 70:
-                plt.title("Gold - Bitcoin holdings")
-                plt.xlabel("Days")
-                plt.ylabel("amounts")
-                plt.plot(RANDOM_DATE, ran_dqy_bitcoin)
-                plt.plot(RANDOM_DATE, ran_dqy_gold)
-                plt.legend(labels = ["bitcoin holdings", "gold holdings"], loc = "best")
-                plt.savefig("随机数法/GoldBitcoinHoldings_Random.png")
-                plt.show()
-
-                plt.title("Money Holdings")
-                plt.xlabel("Days")
-                plt.ylabel("amounts")
-                plt.plot(RANDOM_DATE, ran_money)
-                plt.legend(labels = ["money"], loc ='best')
-                plt.savefig("随机数法/MoneyHoldings_Random.png")
-                plt.show()
-
-                plt.title("Total Asset")
-                plt.xlabel("Days")
-                plt.ylabel("values")
-                plt.plot(RANDOM_DATE, ran_total_wealth)
-                plt.legend(labels = ["total asset value"], loc ='best')
-                plt.savefig("随机数法/TotalAsset_Random.png")
-                plt.show()
+#                 plt.title("Total Asset")
+#                 plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m/%d/%y'))
+#                 plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval = 100))
+#                 plt.xlabel("Date")
+#                 plt.ylabel("Value")
+#                 plt.plot(random_date_format, ran_total_wealth)
+#                 plt.legend(labels = ["total asset value"], loc ='best')
+#                 plt.gcf().autofmt_xdate() #自动旋转日期标记
+#                 plt.savefig("随机数法/TotalAsset_Random.png")
+#                 plt.show()
         
-        ran_total_wealth_final[cnt] = ran_total_wealth[-1]
-    ran_total_wealth_all_final[i1] = np.mean(ran_total_wealth_final)
+#         ran_total_wealth_final[cnt] = ran_total_wealth[-1]
+#     ran_total_wealth_all_final[i1] = np.mean(ran_total_wealth_final)
 
 # data_random_tosave = pd.DataFrame({'交易间隔' : time_random_day, '资产平均值' : ran_total_wealth_all_final})
 # data_random_tosave.to_csv('交易间隔_资产平均值.csv', sep=',', index = False)
@@ -474,31 +537,41 @@ for i1, times in enumerate (time_random_day):
 
 # total_wealth_fo_lin[1825] = money_for_lin[-1] + bitcoin_for_lin[-1] * bitcoin[-1] + gold_for_lin[-1] * gold_append[-1]
 
-# min_date = np.where(total_wealth_fo_lin == np.min(total_wealth_fo_lin))[0][0]
-# print(min_date in time_sort)
 
-# plt.plot(X_bitcoin, total_wealth_fo_lin)
+
+
 # plt.title("Linear programming_predict_total assets")
-# plt.ylabel("Total assets")
-# plt.xlabel("Days")
-# plt.savefig("Linear_programming_predict_total_assets.png", dpi = 500)
+# plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m/%d/%y'))
+# plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval = 100))
+# plt.plot(X_bitcoin_date, total_wealth_fo_lin)
+# plt.ylabel("Value")
+# plt.xlabel("Date")
+# plt.legend(labels = ["asset"], loc = 'best')
+# plt.gcf().autofmt_xdate() #自动旋转日期标记
+# plt.savefig("线性规划&预测/Linear_programming_predict_total_assets.png", dpi = 500)
 # plt.show()
 
 # plt.title("Gold - Bitcoin holdings")
+# plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m/%d/%y'))
+# plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval = 100))
 # plt.plot(X_bitcoin, bitcoin_for_lin)
 # plt.plot(X_bitcoin, gold_for_lin)
 # plt.legend(labels = ['bitcoin', 'gold'], loc = 'best')
-# plt.ylabel("amount")
-# plt.xlabel("Days")
-# plt.savefig("GoldBitcoinHoldings_LPP.png", dpi = 500)
+# plt.ylabel("Amount")
+# plt.xlabel("Date")
+# plt.gcf().autofmt_xdate() #自动旋转日期标记
+# plt.savefig("线性规划&预测/GoldBitcoinHoldings_LPP.png", dpi = 500)
 # plt.show()
 
 # plt.title("Money holdings")
-# plt.plot(X_bitcoin, money_for_lin)
+# plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m/%d/%y'))
+# plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval = 100))
+# plt.plot(X_bitcoin_date, money_for_lin)
 # plt.legend(labels = ['money'], loc = 'best')
-# plt.ylabel("amounts/$")
-# plt.xlabel("Days")
-# plt.savefig("MoneyHoldings_LPP.png", dpi = 500)
+# plt.ylabel("Value")
+# plt.xlabel("Date")
+# plt.gcf().autofmt_xdate() #自动旋转日期标记
+# plt.savefig("线性规划&预测/MoneyHoldings_LPP.png", dpi = 500)
 # plt.show()
 
 
