@@ -191,7 +191,7 @@ def B_MA(customer, bitcoin, time_sort,
                     customer.sell_gold(customer.gold_amount, gold_date_index)
                     customer.sell_bitcoin(customer.bitcoin_amount, date)
                 else:
-                    pass
+                    customer.sell_bitcoin(customer.bitcoin_amount, date)
             elif j1 == 0:  
                 if j2 > 0:
                     customer.buy_gold(PARAM.ALLIN, gold_date_index)
