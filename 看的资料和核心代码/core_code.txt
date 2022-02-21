@@ -1,0 +1,60 @@
+#双线法判断是否买入或卖出
+def B_MA_judge(date, means_assert_1_now, means_assert_2_now, means_assert_1_before, means_assert_2_before):
+    a = means_assert_1_now - means_assert_2_now
+    b = means_assert_1_before - means_assert_2_before
+    if date >= 1:
+        if a != 0:
+            if a * b > 0:
+                return 0
+            else:
+                if a > 0:
+                    return 1
+                else:
+                    return -1
+        else:
+            if b == 0:
+                return 0
+            else:
+                return -(b/np.abs(b))
+    else:
+        #第一天就hold
+        return 0
+
+
+
+#处理黄金交易日与行数不匹配问题
+def calcuTimeSort(time ,base):
+    t1 = [ int(i) for i in base.split('/') ]
+    t2 = [ int(i) for i in time.split('/') ]
+    d1 = datetime(t1[2], t1[0], t1[1])
+    d2 = datetime(t2[2], t2[0], t2[1])
+    dif = d2 - d1
+    return dif.days
+gold_date_index = int(np.argmax(time_sort == date))
+
+
+
+#线性规划计算目标行数
+def calTargetFunc(coelist, mode, gold_amount, bitcoin_amount ,bitcoin_pre, gold_pre, change_list, gold, bitcoin):
+    if len(coelist) == 2:
+        Acoe = coelist[0]
+        Bcoe = coelist[1]
+        gold_change = change_list[0]
+        bitcoin_change = change_list[1]
+        term1 = Acoe*(gold_change + gold_amount) + Bcoe*(bitcoin_amount + bitcoin_change)
+    else:
+        Bcoe = coelist[0]
+        bitcoin_change = change_list[0]
+        term1 = Bcoe * (bitcoin_amount + bitcoin_change) 
+    if mode == 1:
+        return term1 - gold_pre * gold_change * gold - bitcoin_pre * bitcoin_change * bitcoin
+    elif mode == 2:
+        return term1 - gold_pre * gold_change * gold + bitcoin_pre * bitcoin_change * bitcoin
+    elif mode == 3:
+        return term1 + gold_pre * gold_change * gold - bitcoin_pre * bitcoin_change * bitcoin
+    elif mode == 4:
+        return term1 + gold_pre * gold_change * gold + bitcoin_pre * bitcoin_change * bitcoin
+    elif mode == 5:
+        return term1 - bitcoin_pre * bitcoin_change * bitcoin
+    elif mode == 6:
+        return term1 + bitcoin_pre * bitcoin_change * bitcoin
