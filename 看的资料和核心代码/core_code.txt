@@ -34,7 +34,7 @@ gold_date_index = int(np.argmax(time_sort == date))
 
 
 
-#线性规划计算目标行数
+#线性规划计算目标函数
 def calTargetFunc(coelist, mode, gold_amount, bitcoin_amount ,bitcoin_pre, gold_pre, change_list, gold, bitcoin):
     if len(coelist) == 2:
         Acoe = coelist[0]
@@ -58,3 +58,22 @@ def calTargetFunc(coelist, mode, gold_amount, bitcoin_amount ,bitcoin_pre, gold_
         return term1 - bitcoin_pre * bitcoin_change * bitcoin
     elif mode == 6:
         return term1 + bitcoin_pre * bitcoin_change * bitcoin
+
+#计算某天尽可能用于操作的资源(Money bitcoin gold)数
+def all_buy_b_param(means_1, means_2, cur_price_1, cur_price_2, cur_money):
+    a =  (means_1 - cur_price_1)/means_1
+    b =  (means_2 - cur_price_2)/means_2
+    return (a/s(a+b)) * (cur_money/cur_price_1)
+
+#计算当日交易的最终数额
+def expressions(money, a, judge ,means_1, cur_price_1, means_2, cur_price_2, amount ,mode):
+    if mode == 0:##两个都买
+        return a + judge * all_buy_b_param(means_1, means_2, cur_price_1, cur_price_2, money)
+    elif mode == 1:##一买一卖买的情况
+        return a + judge * buy_b_param(money, cur_price_1)
+    elif mode == 2:#卖的情况
+        return a + judge * sell_b_param(amount)
+
+#用于决策当日某种物品(比特币或黄金)是否购入或卖出
+def judge(means, cur_price, offset):
+    return offset + ((means - cur_price)/means)
