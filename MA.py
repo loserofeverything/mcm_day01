@@ -132,13 +132,17 @@ def S_MA(customer, bitcoin, time_sort, gold, time, date, buy_days, buy_days_gold
     else:
         #如果这天不是黄金的交易日，那么只需要考虑比特币即可
         means_bitcoin = calM_L(date, time, bitcoin)
-        bitcoin_change = customer.bitcoin_amount + ((means_bitcoin - bitcoin[date])/means_bitcoin) * (customer.money/bitcoin[date])
+        # bitcoin_change = 0 + ((means_bitcoin - bitcoin[date])/means_bitcoin) * (customer.money/bitcoin[date])
+        j = (offset + (means_bitcoin - bitcoin[date])/means_bitcoin)
+        bitcoin_change_buy = j * customer.money /((1 + customer.bitcoin_premium) * bitcoin[date])
+        bitcoin_change_sell = j * customer.bitcoin_amount / ((1 + customer.bitcoin_premium) * bitcoin[date])
         
-        buy_days[date] = bitcoin_change
-        if bitcoin_change <= 0:
-            customer.sell_bitcoin(np.abs(bitcoin_change), date)
-        elif bitcoin_change > 0:
-            customer.buy_bitcoin(bitcoin_change, date)
+        buy_days[date] = j
+
+        if j <= 0:
+            customer.sell_bitcoin(np.abs(bitcoin_change_sell), date)
+        elif j > 0:
+            customer.buy_bitcoin(bitcoin_change_buy, date)
 
 
 
